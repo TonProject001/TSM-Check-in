@@ -19,7 +19,12 @@
       <form id="locationForm">
         <div class="mb-3">
           <label for="name" class="form-label">ชื่อ-นามสกุล</label>
-          <input type="text" class="form-control" id="name" required>
+          <select class="form-control" id="name" required>
+            <option value="">-- เลือกชื่อ --</option>
+            <option value="นาย ก">นาย ก</option>
+            <option value="นางสาว ข">นางสาว ข</option>
+            <option value="นาย ค">นาย ค</option>
+          </select>
         </div>
         <div class="mb-3">
           <label class="form-label">พิกัด</label>
@@ -30,6 +35,7 @@
         <div class="mb-3">
           <label class="form-label">ตำแหน่งของคุณคือ</label>
           <input type="text" class="form-control" id="yourLocation" readonly>
+          <input type="text" class="form-control mt-2" id="distance" placeholder="ระยะทาง (เมตร)" readonly>
         </div>
         <div class="mb-3">
           <label class="form-label">แนบรูปภาพ</label>
@@ -41,10 +47,10 @@
     <footer>พัฒนาโดย นวก.โสต ศุภฤกษ์ เนตรแก้ว | โรงพยาบาลสมเด็จพระเจ้าตากสินมหาราช</footer>
     <script>
       const scriptURL = 'https://script.google.com/macros/s/AKfycbxCpErKAHC_p2z4OOL8popdp9D9jl_8R7xIUMtCzm4WcnSllTSRflMehowv59UIUJIM/exec';
+      const referenceLocation = { lat: 13.7563, lng: 100.5018 };
       
       function getLocation() {
-        Swal.fire({ title: 'กำลังตรวจสอบพิกัด', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }
-        });
+        Swal.fire({ title: 'กำลังตรวจสอบพิกัด', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
         navigator.geolocation.getCurrentPosition(
           (position) => {
             const latitude = position.coords.latitude.toFixed(8);
@@ -52,6 +58,7 @@
             document.getElementById('latitude').value = latitude;
             document.getElementById('longitude').value = longitude;
             document.getElementById('yourLocation').value = `${latitude}, ${longitude}`;
+            document.getElementById('distance').value = calculateDistance(latitude, longitude, referenceLocation.lat, referenceLocation.lng).toFixed(2) + ' เมตร';
             Swal.close();
             Swal.fire('สำเร็จ', 'ดึงพิกัดสำเร็จ', 'success');
           },
@@ -60,11 +67,23 @@
         );
       }
       
+      function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371e3;
+        const φ1 = lat1 * Math.PI / 180;
+        const φ2 = lat2 * Math.PI / 180;
+        const Δφ = (lat2 - lat1) * Math.PI / 180;
+        const Δλ = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+      }
+      
       document.getElementById('locationForm').addEventListener('submit', async (event) => {
         event.preventDefault();
         const name = document.getElementById('name').value;
         const latitude = document.getElementById('latitude').value;
         const longitude = document.getElementById('longitude').value;
+        const distance = document.getElementById('distance').value;
         const imageFile = document.getElementById('image').files[0];
         
         if (!latitude || !longitude) {
@@ -79,6 +98,7 @@
           formData.append('name', name);
           formData.append('latitude', latitude);
           formData.append('longitude', longitude);
+          formData.append('distance', distance);
           formData.append('image', imageData);
           
           Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
@@ -90,6 +110,7 @@
               Swal.fire('สำเร็จ', 'ข้อมูลถูกบันทึกเรียบร้อย', 'success').then(() => {
                 document.getElementById('locationForm').reset();
                 document.getElementById('yourLocation').value = '';
+                document.getElementById('distance').value = '';
               });
             } else {
               throw new Error(result.message);
