@@ -1,126 +1,126 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<html lang="th">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Location Form</title>
+    <title>TSM Check-in</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-      body { font-family: 'Prompt', sans-serif; background-color: #f0f2f5; }
-      .form-container { max-width: 600px; margin: 20px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
-      .form-header { text-align: center; }
-      footer { text-align: center; padding: 20px; background-color: #007BFF; color: white; margin-top: 19px; width: 100%; }
+        body { font-family: 'Prompt', sans-serif; background-color: #f0f2f5; padding: 20px; }
+        .container { max-width: 500px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
     </style>
-  </head>
-  <body>
-    <div class="form-container">
-      <h2 class="form-header">TSM Check-in</h2>
-      <form id="locationForm">
-        <div class="mb-3">
-          <label for="name" class="form-label">ชื่อ-นามสกุล</label>
-          <select class="form-control" id="name" required>
-            <option value="">-- เลือกชื่อ --</option>
-            <option value="นาย ก">นาย ก</option>
-            <option value="นางสาว ข">นางสาว ข</option>
-            <option value="นาย ค">นาย ค</option>
-          </select>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">พิกัด</label>
-          <button type="button" class="btn btn-primary w-100" onclick="getLocation()">ดึงพิกัดอัตโนมัติ</button>
-          <input type="hidden" id="latitude">
-          <input type="hidden" id="longitude">
-        </div>
-        <div class="mb-3">
-          <label class="form-label">ตำแหน่งของคุณคือ</label>
-          <input type="text" class="form-control" id="yourLocation" readonly>
-          <input type="text" class="form-control mt-2" id="distance" placeholder="ระยะทาง (เมตร)" readonly>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">แนบรูปภาพ</label>
-          <input type="file" class="form-control" id="image" accept="image/*" required>
-        </div>
-        <button type="submit" class="btn btn-success w-100">บันทึก</button>
-      </form>
+</head>
+<body>
+
+    <div class="container">
+        <h2 class="text-center">TSM Check-in</h2>
+        <form id="locationForm">
+            <div class="mb-3">
+                <label for="name" class="form-label">ชื่อ-นามสกุล</label>
+                <input type="text" class="form-control" id="name" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">พิกัด</label>
+                <button type="button" class="btn btn-primary w-100" onclick="getLocation()">ดึงพิกัดอัตโนมัติ</button>
+                <input type="hidden" id="latitude">
+                <input type="hidden" id="longitude">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">ตำแหน่งของคุณ</label>
+                <input type="text" class="form-control" id="yourLocation" readonly>
+            </div>
+            <button type="submit" class="btn btn-success w-100">บันทึก</button>
+        </form>
     </div>
-    <footer>พัฒนาโดย นวก.โสต ศุภฤกษ์ เนตรแก้ว | โรงพยาบาลสมเด็จพระเจ้าตากสินมหาราช</footer>
+
     <script>
-      const scriptURL = 'https://script.google.com/macros/s/AKfycbxCpErKAHC_p2z4OOL8popdp9D9jl_8R7xIUMtCzm4WcnSllTSRflMehowv59UIUJIM/exec';
-      const referenceLocation = { lat: 13.7563, lng: 100.5018 };
-      
-      function getLocation() {
-        Swal.fire({ title: 'กำลังตรวจสอบพิกัด', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const latitude = position.coords.latitude.toFixed(8);
-            const longitude = position.coords.longitude.toFixed(8);
-            document.getElementById('latitude').value = latitude;
-            document.getElementById('longitude').value = longitude;
-            document.getElementById('yourLocation').value = `${latitude}, ${longitude}`;
-            document.getElementById('distance').value = calculateDistance(latitude, longitude, referenceLocation.lat, referenceLocation.lng).toFixed(2) + ' เมตร';
-            Swal.close();
-            Swal.fire('สำเร็จ', 'ดึงพิกัดสำเร็จ', 'success');
-          },
-          () => { Swal.close(); Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถดึงพิกัดได้', 'error'); },
-          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-        );
-      }
-      
-      function calculateDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371e3;
-        const φ1 = lat1 * Math.PI / 180;
-        const φ2 = lat2 * Math.PI / 180;
-        const Δφ = (lat2 - lat1) * Math.PI / 180;
-        const Δλ = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
-      }
-      
-      document.getElementById('locationForm').addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const name = document.getElementById('name').value;
-        const latitude = document.getElementById('latitude').value;
-        const longitude = document.getElementById('longitude').value;
-        const distance = document.getElementById('distance').value;
-        const imageFile = document.getElementById('image').files[0];
-        
-        if (!latitude || !longitude) {
-          Swal.fire('ข้อผิดพลาด', 'กรุณาดึงพิกัดก่อนบันทึก', 'error');
-          return;
+        const scriptURL = "https://script.google.com/macros/s/AKfycbwrgWbSSb_1P3zUNUWkFg5v1tJM-4D7BVzONj1Ww-CSPsuGfCYM0Niwn5BqsEJeq_ed5A/exec"; // ใส่ URL จาก Google Apps Script
+
+        // 🔥 กำหนดพิกัดเป้าหมายที่อนุญาตให้เช็คอิน (เช่น อาคารสำนักงาน, โรงเรียน, โรงพยาบาล ฯลฯ)
+        const TARGET_LAT = 16.8728852; // ละติจูดเป้าหมาย
+        const TARGET_LNG = 99.1314056; // ลองจิจูดเป้าหมาย
+        const ALLOWED_RADIUS = 50; // ระยะห่างที่ยอมให้เช็คอิน (เมตร)
+
+        function getLocation() {
+            Swal.fire({ title: 'กำลังตรวจสอบพิกัด...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const latitude = position.coords.latitude.toFixed(8);
+                    const longitude = position.coords.longitude.toFixed(8);
+                    document.getElementById('latitude').value = latitude;
+                    document.getElementById('longitude').value = longitude;
+                    document.getElementById('yourLocation').value = `${latitude}, ${longitude}`;
+                    Swal.close();
+
+                    // ตรวจสอบระยะทาง
+                    const distance = getDistanceFromLatLonInMeters(latitude, longitude, TARGET_LAT, TARGET_LNG);
+                    
+                    if (distance > ALLOWED_RADIUS) {
+                        Swal.fire('ไม่สามารถเช็คอินได้', `คุณอยู่ห่างจากจุดเช็คอิน ${distance.toFixed(2)} เมตร (เกิน 50 เมตร)`, 'error');
+                        document.getElementById('latitude').value = '';
+                        document.getElementById('longitude').value = '';
+                        document.getElementById('yourLocation').value = '';
+                    } else {
+                        Swal.fire('สำเร็จ', 'ดึงพิกัดสำเร็จ', 'success');
+                    }
+                },
+                () => Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถดึงพิกัดได้', 'error'),
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
         }
-        
-        const reader = new FileReader();
-        reader.onload = async () => {
-          const imageData = reader.result.split(',')[1];
-          const formData = new FormData();
-          formData.append('name', name);
-          formData.append('latitude', latitude);
-          formData.append('longitude', longitude);
-          formData.append('distance', distance);
-          formData.append('image', imageData);
-          
-          Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
-          
-          try {
-            const response = await fetch(scriptURL, { method: 'POST', body: formData });
-            const result = await response.json();
-            if (result.status === 'success') {
-              Swal.fire('สำเร็จ', 'ข้อมูลถูกบันทึกเรียบร้อย', 'success').then(() => {
+
+        // 🔥 ฟังก์ชันคำนวณระยะทางระหว่าง 2 พิกัด (Haversine Formula)
+        function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
+            const R = 6371000; // รัศมีโลก (เมตร)
+            const dLat = deg2rad(lat2 - lat1);
+            const dLon = deg2rad(lon2 - lon1);
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI / 180);
+        }
+
+        document.getElementById('locationForm').addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value.trim();
+            const latitude = document.getElementById('latitude').value;
+            const longitude = document.getElementById('longitude').value;
+
+            if (!latitude || !longitude) {
+                Swal.fire('ข้อผิดพลาด', 'กรุณาดึงพิกัดก่อนบันทึก', 'error');
+                return;
+            }
+
+            // ตรวจสอบระยะทางอีกครั้งก่อนบันทึก
+            const distance = getDistanceFromLatLonInMeters(latitude, longitude, TARGET_LAT, TARGET_LNG);
+
+            if (distance > ALLOWED_RADIUS) {
+                Swal.fire('ไม่สามารถเช็คอินได้', `คุณอยู่ห่างจากจุดเช็คอิน ${distance.toFixed(2)} เมตร (เกิน 50 เมตร)`, 'error');
+                return;
+            }
+
+            fetch(scriptURL, {
+                method: "POST",
+                body: JSON.stringify({ name, latitude, longitude }),
+                headers: { "Content-Type": "application/json" }
+            })
+            .then(response => response.text())
+            .then(() => {
+                Swal.fire('สำเร็จ', 'ข้อมูลถูกบันทึกเรียบร้อย', 'success');
                 document.getElementById('locationForm').reset();
                 document.getElementById('yourLocation').value = '';
-                document.getElementById('distance').value = '';
-              });
-            } else {
-              throw new Error(result.message);
-            }
-          } catch (error) {
-            Swal.fire('เกิดข้อผิดพลาด', error.message, 'error');
-          }
-        };
-        reader.readAsDataURL(imageFile);
-      });
+            })
+            .catch(() => Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้', 'error'));
+        });
     </script>
-  </body>
+
+</body>
 </html>
