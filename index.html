@@ -35,7 +35,7 @@
     </div>
 
     <script>
-        const scriptURL = "https://script.google.com/macros/s/AKfycbwrgWbSSb_1P3zUNUWkFg5v1tJM-4D7BVzONj1Ww-CSPsuGfCYM0Niwn5BqsEJeq_ed5A/exec"; // ใส่ URL จาก Google Apps Script
+        const scriptURL = "https://script.google.com/macros/s/AKfycbyTmELpnUute3Nk4KraqcPUnWFcISA8P91GAYHM3rgPV8my-CcWWkvfKRC0ewg2Dg3_HA/exec"; // ใส่ URL จาก Google Apps Script
 
         // 🔥 กำหนดพิกัดเป้าหมายที่อนุญาตให้เช็คอิน (เช่น อาคารสำนักงาน, โรงเรียน, โรงพยาบาล ฯลฯ)
         const TARGET_LAT = 16.8728852; // ละติจูดเป้าหมาย
@@ -108,7 +108,7 @@
             }
 
             fetch(scriptURL, {
-                method: "POST",
+                method: "GET",
                 body: JSON.stringify({ name, latitude, longitude }),
                 headers: { "Content-Type": "application/json" }
             })
