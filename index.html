@@ -108,7 +108,7 @@
             }
 
             fetch(scriptURL, {
-                method: "GET",
+                method: "POST",
                 body: JSON.stringify({ name, latitude, longitude }),
                 headers: { "Content-Type": "application/json" }
             })
