@@ -5,107 +5,176 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TSM Check-in</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* เพิ่ม CSS สำหรับจัดรูปแบบ */
+        @keyframes neonGlow {
+            0% { box-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 15px #00ff00; }
+            50% { box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00; }
+            100% { box-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 15px #00ff00; }
+        }
+
+        @keyframes textNeonGlow {
+            0% { text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 15px #00ff00; }
+            50% { text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00; }
+            100% { text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 15px #00ff00; }
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            background-color: #000000;
         }
 
         .container {
-            background-color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            border-radius: 10px;
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
             width: 90%;
             max-width: 400px;
-            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 255, 0, 0.1);
+            margin-bottom: 20px;
         }
 
         h2 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 24px;
+            color: #00ff00;
+            margin-bottom: 30px;
+            font-size: 28px;
+            text-align: center;
+            position: relative;
+            animation: textNeonGlow 2s ease-in-out infinite;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
         }
 
         label {
-            font-size: 16px;
-            margin-bottom: 5px;
-            display: block;
-            color: #333;
+            font-size: 14px;
+            color: #00ff00;
+            position: absolute;
+            top: -20px;
+            left: 10px;
+            transition: all 0.3s ease;
         }
 
         input {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 15px;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: transparent;
             box-sizing: border-box;
+            color: #00ff00;
+        }
+
+        input:focus {
+            border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+            outline: none;
         }
 
         button {
             width: 100%;
-            padding: 12px;
-            border: none;
-            background-color: #007BFF;
-            color: white;
+            padding: 15px;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
             font-size: 16px;
-            border-radius: 5px;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            position: relative;
+            background: transparent;
+            color: #00ff00;
+            animation: neonGlow 2s ease-in-out infinite;
         }
 
         button:hover {
-            background-color: #0056b3;
+            background: rgba(0, 255, 0, 0.1);
         }
 
-        .btn-info {
-            background-color: #28a745;
+        .location-icon {
+            font-size: 24px;
+            margin-right: 10px;
+            display: inline-block;
+            color: #00ff00;
         }
 
-        .btn-info:hover {
-            background-color: #218838;
+        .footer {
+            text-align: center;
+            color: #00ff00;
+            margin-top: 20px;
+            animation: textNeonGlow 2s ease-in-out infinite;
         }
 
+        .footer p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h2 {
+                font-size: 24px;
+            }
+        }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <h2>TSM Check-in</h2>
+        <h2><i class="fas fa-map-marker-alt location-icon"></i>TSM Check-in</h2>
         <form id="locationForm">
-            <label for="name">ชื่อ-นามสกุล:</label>
-            <input type="text" id="name" name="name" required><br><br>
+            <div class="input-group">
+                <label for="name">ชื่อ-นามสกุล</label>
+                <input type="text" id="name" name="name" required>
+            </div>
 
-            <label for="coordinates">พิกัด (ละติจูด, ลองจิจูด):</label>
-            <input type="text" id="coordinates" name="coordinates" readonly><br><br>
+            <div class="input-group">
+                <label for="coordinates">พิกัด (ละติจูด, ลองจิจูด)</label>
+                <input type="text" id="coordinates" name="coordinates" readonly>
+            </div>
 
-            <button type="button" onclick="getLocation()" class="btn-info">ดึงพิกัดอัตโนมัติ</button><br><br>
-            <button type="submit">บันทึกข้อมูล</button>
+            <button type="button" onclick="getLocation()" class="btn-info">
+                <i class="fas fa-location-crosshairs"></i> ดึงพิกัดอัตโนมัติ
+            </button>
+            
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-save"></i> บันทึกข้อมูล
+            </button>
         </form>
+    </div>
+
+    <div class="footer">
+        <p>ออกแบบและพัฒนาโดย</p>
+        <p>นักวิชาการโสตฯ ศุภฤกษ์ เนตรแก้ว</p>
+        <p>รพ.สมเด็จพระเจ้าตากสินมหาราช</p>
     </div>
 
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbyTmELpnUute3Nk4KraqcPUnWFcISA8P91GAYHM3rgPV8my-CcWWkvfKRC0ewg2Dg3_HA/exec';
         const form = document.getElementById('locationForm');
 
-        // พิกัดเป้าหมาย
         const TARGET_LAT = 16.8728852;
         const TARGET_LNG = 99.1314056;
-        const ALLOWED_RADIUS = 50;  // ระยะห่างที่ยอมให้เช็คอิน (เมตร)
+        const ALLOWED_RADIUS = 50;
 
-        // ฟังก์ชันคำนวณระยะห่างระหว่างสองพิกัด (ใช้สูตร Haversine)
         function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371e3;  // รัศมีของโลกในเมตร
-            const φ1 = lat1 * Math.PI / 180;  // แปลงละติจูดจากองศาเป็นเรเดียน
-            const φ2 = lat2 * Math.PI / 180;  // แปลงละติจูดจากองศาเป็นเรเดียน
+            const R = 6371e3;
+            const φ1 = lat1 * Math.PI / 180;
+            const φ2 = lat2 * Math.PI / 180;
             const Δφ = (lat2 - lat1) * Math.PI / 180;
             const Δλ = (lon2 - lon1) * Math.PI / 180;
 
@@ -114,82 +183,116 @@
                       Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-            return R * c;  // ระยะทางในเมตร
+            return R * c;
         }
 
-        // ดึงพิกัดจาก GPS
-       function getLocation() {
-    Swal.fire({ 
-        title: 'กำลังตรวจสอบพิกัด...', 
-        allowOutsideClick: false, 
-        didOpen: () => { Swal.showLoading(); } 
-    });
-
-    navigator.geolocation.getCurrentPosition(
-        (position) => {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-            document.getElementById('coordinates').value = `${latitude.toFixed(8)}, ${longitude.toFixed(8)}`;
-            
-            // คำนวณระยะห่างจากจุดเช็คอิน
-            const distance = calculateDistance(latitude, longitude, TARGET_LAT, TARGET_LNG);
-
-            // แสดงระยะห่างจากจุดเช็คอิน
+        function getLocation() {
             Swal.fire({
-                title: 'สำเร็จ',
-                text: `ระยะห่างจากจุดเช็คอิน: ${distance.toFixed(2)} เมตร`,
-                icon: 'success',
-                showConfirmButton: true
+                title: 'กำลังตรวจสอบพิกัด...',
+                text: 'โปรดรอสักครู่',
+                allowOutsideClick: false,
+                background: '#000',
+                color: '#00ff00',
+                didOpen: () => {
+                    Swal.showLoading();
+                }
             });
-        },
-        () => Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถดึงพิกัดได้', 'error'),
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    );
-}
 
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    document.getElementById('coordinates').value = `${latitude.toFixed(8)}, ${longitude.toFixed(8)}`;
+                    
+                    const distance = calculateDistance(latitude, longitude, TARGET_LAT, TARGET_LNG);
+
+                    Swal.fire({
+                        title: 'ดึงพิกัดสำเร็จ',
+                        text: `ระยะห่างจากจุดเช็คอิน: ${distance.toFixed(2)} เมตร`,
+                        icon: 'success',
+                        showConfirmButton: true,
+                        confirmButtonText: 'ตกลง',
+                        background: '#000',
+                        color: '#00ff00'
+                    });
+                },
+                () => {
+                    Swal.fire({
+                        title: 'เกิดข้อผิดพลาด',
+                        text: 'ไม่สามารถดึงพิกัดได้',
+                        icon: 'error',
+                        confirmButtonText: 'ตกลง',
+                        background: '#000',
+                        color: '#00ff00'
+                    });
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        }
 
         form.addEventListener('submit', function(e) {
-            e.preventDefault();  // ป้องกันการรีเฟรชหน้าเมื่อส่งฟอร์ม
+            e.preventDefault();
 
             const name = document.getElementById('name').value;
             const coordinates = document.getElementById('coordinates').value;
 
-            // ตรวจสอบว่ามีพิกัดหรือไม่
             if (!coordinates) {
-                Swal.fire('ข้อผิดพลาด', 'กรุณาดึงพิกัดก่อนบันทึก', 'error');
+                Swal.fire({
+                    title: 'ข้อผิดพลาด',
+                    text: 'กรุณาดึงพิกัดก่อนบันทึก',
+                    icon: 'error',
+                    confirmButtonText: 'ตกลง',
+                    background: '#000',
+                    color: '#00ff00'
+                });
                 return;
             }
 
             const [latitude, longitude] = coordinates.split(',').map(coord => parseFloat(coord.trim()));
-
-            // คำนวณระยะห่างจากพิกัดที่กำหนด
             const distance = calculateDistance(latitude, longitude, TARGET_LAT, TARGET_LNG);
 
-            // เช็คว่าอยู่ในระยะที่อนุญาตหรือไม่
             if (distance > ALLOWED_RADIUS) {
-                Swal.fire('ข้อผิดพลาด', `ระยะห่างเกิน ${ALLOWED_RADIUS} เมตรจากจุดเช็คอิน`, 'error');
+                Swal.fire({
+                    title: 'ข้อผิดพลาด',
+                    text: `ระยะห่างเกิน ${ALLOWED_RADIUS} เมตรจากจุดเช็คอิน`,
+                    icon: 'error',
+                    confirmButtonText: 'ตกลง',
+                    background: '#000',
+                    color: '#00ff00'
+                });
                 return;
             }
 
-            // สร้าง URLSearchParams สำหรับส่งข้อมูล
             const params = new URLSearchParams({
                 name: name,
                 latitude: latitude,
                 longitude: longitude
             });
 
-            // ส่งข้อมูลไปยัง Google Apps Script
             fetch(scriptURL + '?' + params.toString())
-                .then(response => response.text())  // อ่านข้อมูลที่ส่งกลับ
+                .then(response => response.text())
                 .then(() => {
-                    Swal.fire('สำเร็จ', 'ข้อมูลถูกบันทึกเรียบร้อย', 'success');
-                    form.reset();  // รีเซ็ตฟอร์มหลังจากส่งข้อมูล
+                    Swal.fire({
+                        title: 'สำเร็จ',
+                        text: 'ข้อมูลถูกบันทึกเรียบร้อย',
+                        icon: 'success',
+                        confirmButtonText: 'ตกลง',
+                        background: '#000',
+                        color: '#00ff00'
+                    });
+                    form.reset();
                 })
                 .catch(() => {
-                    Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้', 'error');
+                    Swal.fire({
+                        title: 'เกิดข้อผิดพลาด',
+                        text: 'ไม่สามารถบันทึกข้อมูลได้',
+                        icon: 'error',
+                        confirmButtonText: 'ตกลง',
+                        background: '#000',
+                        color: '#00ff00'
+                    });
                 });
         });
     </script>
-
 </body>
 </html>
