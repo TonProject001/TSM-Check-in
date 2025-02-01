@@ -114,7 +114,6 @@
             text-align: center;
             color: #00ff00;
             margin-top: 20px;
-            
         }
 
         .footer p {
@@ -164,15 +163,22 @@
     </div>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbyTmELpnUute3Nk4KraqcPUnWFcISA8P91GAYHM3rgPV8my-CcWWkvfKRC0ewg2Dg3_HA/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxk9BWrU1ayk1qBoB66c_VSH7ufLSyVZrYY7gxh6EK2zeKXkUa7NP4H_PVLUXTklQgxVA/exec';
         const form = document.getElementById('locationForm');
 
-        const TARGET_LAT = 16.872816;
-        const TARGET_LNG = 99.131639;
-        const ALLOWED_RADIUS = 12;
+        const checkPoints = [
+           { id: 1, lat: 16.872816, lng: 99.131639 }, // จุดเช็คอินที่ 1 ชั้น6
+           { id: 2, lat: 16.872282, lng: 99.131993 }, // จุดเช็คอินที่ 2 จิตเวช
+           { id: 3, lat: 16.871938, lng: 99.131749 }, // จุดเช็คอินที่ 3 ห้องสมุดศูนย์แพทย์
+           { id: 4, lat: 16.873080, lng: 99.130937 }, // จุดเช็คอินที่ 4 พัสดุ
+           { id: 5, lat: 16.872666, lng: 99.132061 }, // จุดเช็คอินที่ 5 มูลนิธิ
+            // เพิ่มจุดเช็คอิน
+        ];
+
+        const ALLOWED_RADIUS = 12; // รัศมีที่อนุญาต (เมตร)
 
         function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371e3;
+            const R = 6371e3; // รัศมีโลกในหน่วยเมตร
             const φ1 = lat1 * Math.PI / 180;
             const φ2 = lat2 * Math.PI / 180;
             const Δφ = (lat2 - lat1) * Math.PI / 180;
@@ -184,6 +190,21 @@
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
             return R * c;
+        }
+
+        function getCheckPointAndDistance(latitude, longitude) {
+            let nearestCheckPoint = null;
+            let minDistance = Infinity;
+
+            checkPoints.forEach(point => {
+                const distance = calculateDistance(latitude, longitude, point.lat, point.lng);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearestCheckPoint = point;
+                }
+            });
+
+            return { check_point: nearestCheckPoint.id, distance: minDistance };
         }
 
         function getLocation() {
@@ -204,17 +225,28 @@
                     const longitude = position.coords.longitude;
                     document.getElementById('coordinates').value = `${latitude.toFixed(8)}, ${longitude.toFixed(8)}`;
                     
-                    const distance = calculateDistance(latitude, longitude, TARGET_LAT, TARGET_LNG);
+                    const { check_point, distance } = getCheckPointAndDistance(latitude, longitude);
 
-                    Swal.fire({
-                        title: 'ดึงพิกัดสำเร็จ',
-                        text: `ระยะห่างจากจุดเช็คอิน: ${distance.toFixed(2)} เมตร`,
-                        icon: 'success',
-                        showConfirmButton: true,
-                        confirmButtonText: 'ตกลง',
-                        background: '#000',
-                        color: '#00ff00'
-                    });
+                    if (distance <= ALLOWED_RADIUS) {
+                        Swal.fire({
+                            title: 'ดึงพิกัดสำเร็จ',
+                            text: `จุดเช็คอินที่ ${check_point}, ระยะห่าง: ${distance.toFixed(2)} เมตร`,
+                            icon: 'success',
+                            showConfirmButton: true,
+                            confirmButtonText: 'ตกลง',
+                            background: '#000',
+                            color: '#00ff00'
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'ข้อผิดพลาด',
+                            text: `ระยะห่างเกิน ${ALLOWED_RADIUS} เมตรจากจุดเช็คอิน`,
+                            icon: 'error',
+                            confirmButtonText: 'ตกลง',
+                            background: '#000',
+                            color: '#00ff00'
+                        });
+                    }
                 },
                 () => {
                     Swal.fire({
@@ -249,7 +281,7 @@
             }
 
             const [latitude, longitude] = coordinates.split(',').map(coord => parseFloat(coord.trim()));
-            const distance = calculateDistance(latitude, longitude, TARGET_LAT, TARGET_LNG);
+            const { check_point, distance } = getCheckPointAndDistance(latitude, longitude);
 
             if (distance > ALLOWED_RADIUS) {
                 Swal.fire({
@@ -263,35 +295,37 @@
                 return;
             }
 
-            const params = new URLSearchParams({
-                name: name,
-                latitude: latitude,
-                longitude: longitude
-            });
+ const params = new URLSearchParams({
+    name: name,
+    latitude: latitude,
+    longitude: longitude,
+    check_point: check_point, // ส่งจุดเช็คอิน
+    distance: distance.toFixed(2) // ส่งระยะห่าง
+});
 
-            fetch(scriptURL + '?' + params.toString())
-                .then(response => response.text())
-                .then(() => {
-                    Swal.fire({
-                        title: 'สำเร็จ',
-                        text: 'ข้อมูลถูกบันทึกเรียบร้อย',
-                        icon: 'success',
-                        confirmButtonText: 'ตกลง',
-                        background: '#000',
-                        color: '#00ff00'
-                    });
-                    form.reset();
-                })
-                .catch(() => {
-                    Swal.fire({
-                        title: 'เกิดข้อผิดพลาด',
-                        text: 'ไม่สามารถบันทึกข้อมูลได้',
-                        icon: 'error',
-                        confirmButtonText: 'ตกลง',
-                        background: '#000',
-                        color: '#00ff00'
-                    });
-                });
+fetch(scriptURL + '?' + params.toString())
+    .then(response => response.text())
+    .then(() => {
+        Swal.fire({
+            title: 'สำเร็จ',
+            text: 'ข้อมูลถูกบันทึกเรียบร้อย',
+            icon: 'success',
+            confirmButtonText: 'ตกลง',
+            background: '#000',
+            color: '#00ff00'
+        });
+        form.reset();
+    })
+    .catch(() => {
+        Swal.fire({
+            title: 'เกิดข้อผิดพลาด',
+            text: 'ไม่สามารถบันทึกข้อมูลได้',
+            icon: 'error',
+            confirmButtonText: 'ตกลง',
+            background: '#000',
+            color: '#00ff00'
+        });
+    });
         });
     </script>
 </body>
