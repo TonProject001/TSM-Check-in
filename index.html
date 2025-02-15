@@ -65,7 +65,7 @@
             transition: all 0.3s ease;
         }
 
-        input {
+        input, select, textarea {
             width: 100%;
             padding: 15px;
             border: 2px solid #00ff00;
@@ -77,10 +77,14 @@
             color: #00ff00;
         }
 
-        input:focus {
+        input:focus, select:focus, textarea:focus {
             border-color: #00ff00;
             box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
             outline: none;
+        }
+
+        textarea {
+            resize: vertical;
         }
 
         button {
@@ -144,6 +148,21 @@
             <div class="input-group">
                 <label for="coordinates">พิกัด (ละติจูด, ลองจิจูด)</label>
                 <input type="text" id="coordinates" name="coordinates" readonly>
+            </div>
+
+            <!-- เพิ่มช่องเลือก "ปกติ" หรือ "ผิดปกติ" -->
+            <div class="input-group">
+                <label for="status">สถานะ</label>
+                <select id="status" name="status" required>
+                    <option value="ปกติ">ปกติ</option>
+                    <option value="ผิดปกติ">ผิดปกติ</option>
+                </select>
+            </div>
+
+            <!-- เพิ่มช่องกรอกหมายเหตุ -->
+            <div class="input-group">
+                <label for="note">หมายเหตุ</label>
+                <textarea id="note" name="note" rows="3"></textarea>
             </div>
 
             <button type="button" onclick="getLocation()" class="btn-info">
@@ -267,6 +286,8 @@
 
             const name = document.getElementById('name').value;
             const coordinates = document.getElementById('coordinates').value;
+            const status = document.getElementById('status').value;
+            const note = document.getElementById('note').value;
 
             if (!coordinates) {
                 Swal.fire({
@@ -295,37 +316,39 @@
                 return;
             }
 
- const params = new URLSearchParams({
-    name: name,
-    latitude: latitude,
-    longitude: longitude,
-    check_point: check_point, // ส่งจุดเช็คอิน
-    distance: distance.toFixed(2) // ส่งระยะห่าง
-});
+            const params = new URLSearchParams({
+                name: name,
+                latitude: latitude,
+                longitude: longitude,
+                check_point: check_point, // ส่งจุดเช็คอิน
+                distance: distance.toFixed(2), // ส่งระยะห่าง
+                status: status, // ส่งสถานะ
+                note: note // ส่งหมายเหตุ
+            });
 
-fetch(scriptURL + '?' + params.toString())
-    .then(response => response.text())
-    .then(() => {
-        Swal.fire({
-            title: 'สำเร็จ',
-            text: 'ข้อมูลถูกบันทึกเรียบร้อย',
-            icon: 'success',
-            confirmButtonText: 'ตกลง',
-            background: '#000',
-            color: '#00ff00'
-        });
-        form.reset();
-    })
-    .catch(() => {
-        Swal.fire({
-            title: 'เกิดข้อผิดพลาด',
-            text: 'ไม่สามารถบันทึกข้อมูลได้',
-            icon: 'error',
-            confirmButtonText: 'ตกลง',
-            background: '#000',
-            color: '#00ff00'
-        });
-    });
+            fetch(scriptURL + '?' + params.toString())
+                .then(response => response.text())
+                .then(() => {
+                    Swal.fire({
+                        title: 'สำเร็จ',
+                        text: 'ข้อมูลถูกบันทึกเรียบร้อย',
+                        icon: 'success',
+                        confirmButtonText: 'ตกลง',
+                        background: '#000',
+                        color: '#00ff00'
+                    });
+                    form.reset();
+                })
+                .catch(() => {
+                    Swal.fire({
+                        title: 'เกิดข้อผิดพลาด',
+                        text: 'ไม่สามารถบันทึกข้อมูลได้',
+                        icon: 'error',
+                        confirmButtonText: 'ตกลง',
+                        background: '#000',
+                        color: '#00ff00'
+                    });
+                });
         });
     </script>
 </body>
