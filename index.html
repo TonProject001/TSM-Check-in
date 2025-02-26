@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @keyframes neonGlow {
+               @keyframes neonGlow {
             0% { box-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 15px #00ff00; }
             50% { box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00; }
             100% { box-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 15px #00ff00; }
@@ -135,45 +135,93 @@
                 font-size: 24px;
             }
         }
+
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: transparent;
+            box-sizing: border-box;
+            color: #00ff00;
+            margin-bottom: 10px;
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: transparent;
+            color: #00ff00;
+            animation: neonGlow 2s ease-in-out infinite;
+        }
+
+        .login-container button:hover {
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2><i class="fas fa-map-marker-alt location-icon"></i>TSM Check-in</h2>
-        <form id="locationForm">
-            <div class="input-group">
-                <label for="name">ชื่อ-นามสกุล</label>
-                <input type="text" id="name" name="name" required>
-            </div>
+        <div class="login-container" id="loginContainer">
+            <input type="password" id="password" placeholder="กรอกรหัสผ่าน">
+            <button onclick="checkPassword()">เข้าสู่ระบบ</button>
+        </div>
 
-            <div class="input-group">
-                <label for="coordinates">พิกัด (ละติจูด, ลองจิจูด)</label>
-                <input type="text" id="coordinates" name="coordinates" readonly>
-            </div>
+        <div id="formContainer" class="hidden">
+            <h2><i class="fas fa-map-marker-alt location-icon"></i>TSM Check-in</h2>
+            <form id="locationForm">
+                <div class="input-group">
+                    <label for="name">ชื่อ-นามสกุล</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
 
-            <!-- เพิ่มช่องเลือก "ปกติ" หรือ "ผิดปกติ" -->
-            <div class="input-group">
-                <label for="status">สถานะ</label>
-                <select id="status" name="status" required>
-                    <option value="ปกติ">ปกติ</option>
-                    <option value="ผิดปกติ">ผิดปกติ</option>
-                </select>
-            </div>
+                <div class="input-group">
+                    <label for="coordinates">พิกัด (ละติจูด, ลองจิจูด)</label>
+                    <input type="text" id="coordinates" name="coordinates" readonly>
+                </div>
 
-            <!-- เพิ่มช่องกรอกหมายเหตุ -->
-            <div class="input-group">
-                <label for="note">หมายเหตุ</label>
-                <textarea id="note" name="note" rows="3"></textarea>
-            </div>
+                <div class="input-group">
+                    <label for="status">สถานะ</label>
+                    <select id="status" name="status" required>
+                        <option value="ปกติ">ปกติ</option>
+                        <option value="ผิดปกติ">ผิดปกติ</option>
+                    </select>
+                </div>
 
-            <button type="button" onclick="getLocation()" class="btn-info">
-                <i class="fas fa-location-crosshairs"></i> ดึงพิกัดอัตโนมัติ
-            </button>
-            
-            <button type="submit" class="btn-submit">
-                <i class="fas fa-save"></i> บันทึกข้อมูล
-            </button>
-        </form>
+                <div class="input-group">
+                    <label for="note">หมายเหตุ</label>
+                    <textarea id="note" name="note" rows="3"></textarea>
+                </div>
+
+                <button type="button" onclick="getLocation()" class="btn-info">
+                    <i class="fas fa-location-crosshairs"></i> ดึงพิกัดอัตโนมัติ
+                </button>
+                
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-save"></i> บันทึกข้อมูล
+                </button>
+            </form>
+        </div>
     </div>
 
     <div class="footer">
@@ -185,6 +233,25 @@
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbw47jJuhQ1taLbWAhdUObe1tThM35MDvysa2l5tC4pJn3t6Rww55HC3gx13qu2-22KGrQ/exec';
         const form = document.getElementById('locationForm');
+        const loginContainer = document.getElementById('loginContainer');
+        const formContainer = document.getElementById('formContainer');
+
+        function checkPassword() {
+            const password = document.getElementById('password').value;
+            if (password === "8") {
+                loginContainer.classList.add('hidden');
+                formContainer.classList.remove('hidden');
+            } else {
+                Swal.fire({
+                    title: 'ข้อผิดพลาด',
+                    text: 'รหัสผ่านไม่ถูกต้อง',
+                    icon: 'error',
+                    confirmButtonText: 'ตกลง',
+                    background: '#000',
+                    color: '#00ff00'
+                });
+            }
+        }
 
         const checkPoints = [
             { id: 1, lat: 16.872357, lng: 99.131516 }, // จุดเช็คอินที่ 1 
